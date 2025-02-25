@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<PackageConfiguration xmlns=
+"http://www.siemens.com/automation/Openness/AddIn/Publisher/V19">
+  <Author>QPEU Converting</Author>
+  <Description>Scripting Example.</Description>
+  <AddInVersion>V0.1</AddInVersion>
+  <Product>
+    <Name>Add-In Name</Name>
+    <Id>123456789</Id>
+    <Version>0.1</Version>
+  </Product>
+  <FeatureAssembly>
+    <AssemblyInfo>
+      <Assembly>bin\Debug\QPADrv_DriveSettings.dll</Assembly>
+      <Pdb>bin\Debug\QPADrv_DriveSettings.pdb</Pdb>
+    </AssemblyInfo>
+  </FeatureAssembly>
+  <AdditionalAssemblies>
+	  <AssemblyInfo>
+		  <Assembly>bin\Debug\StartdriveHelper.dll</Assembly>
+	  </AssemblyInfo>
+	  <AssemblyInfo>
+		  <Assembly>bin\Debug\AddIn.Contracts.dll</Assembly>
+		  <Pdb>bin\Debug\AddIn.Contracts.pdb</Pdb>
+	  </AssemblyInfo>
+    <AssemblyInfo>
+      <Assembly>bin\Debug\AddIn.UI.dll</Assembly>
+      <Pdb>bin\Debug\AddIn.UI.pdb</Pdb>
+    </AssemblyInfo>
+  </AdditionalAssemblies>
+  <RequiredPermissions>
+    <TIAPermissions>
+      <TIA.ReadWrite /> 
+    </TIAPermissions>
+    <SecurityPermissions>
+      <System.Security.Permissions.SecurityPermission.UnmanagedCode/>
+      <System.Security.Permissions.FileDialogPermission/>
+      <System.Security.Permissions.UIPermission/>
+      <System.Security.Permissions.MediaPermission/>
+      <Siemens.Engineering.AddIn.Permissions.ProcessStartPermission/>
+      <System.Net.WebPermission/>
+      <System.Security.Permissions.KeyContainerPermission/>
+      <System.Net.SocketPermission/>
+      <System.Data.Odbc.OdbcPermission/>
+      <System.Security.Permissions.WebBrowserPermission/>
+      <System.Net.NetworkInformation.NetworkInformationPermission/>
+      <System.Security.Permissions.StorePermission/>
+      <System.Configuration.ConfigurationPermission/>
+      <System.Security.Permissions.FileIOPermission/>
+      <System.Diagnostics.EventLogPermission/>
+      <System.Drawing.Printing.PrintingPermission/>
+      <System.Security.Permissions.IsolatedStorageFilePermission/>
+      <System.Data.OleDb.OleDbPermission/>
+      <System.Security.Permissions.RegistryPermission/>
+      <System.Data.SqlClient.SqlClientPermission/>
+      <System.Security.Permissions.EnvironmentPermission/>
+      <System.Net.Mail.SmtpPermission/>
+    </SecurityPermissions>
+  </RequiredPermissions>
+</PackageConfiguration>
