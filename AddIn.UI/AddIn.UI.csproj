@@ -38,6 +38,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Siemens.Engineering.AddIn, Version=19.0.0.0, Culture=neutral, PublicKeyToken=65b871d8372d6a8f" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />

@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AddIn.Contracts;
 using System.Xml.Linq;
+using Siemens.Engineering.HW;
 
 namespace AddIn.UI.pages
 {
@@ -51,7 +52,8 @@ namespace AddIn.UI.pages
                 {
                     TreeViewItem driveNodeG120 = new TreeViewItem
                     {
-                        Header = driveG120.Name
+                        Header = driveG120.Name,
+                        Tag = driveG120.DeviceItem
                     };
                     DriveTreeView.Items.Add(driveNodeG120);
                 }
@@ -70,7 +72,8 @@ namespace AddIn.UI.pages
 
                         TreeViewItem driveNodeS120 = new TreeViewItem
                         {
-                            Header = driveS120.Name
+                            Header = driveS120.Name,
+                            Tag = driveS120.DeviceItem
                         };
                         controlUnitNodeS120.Items.Add(driveNodeS120);
 
@@ -106,9 +109,9 @@ namespace AddIn.UI.pages
         {
             if (DriveTreeView.SelectedItem is TreeViewItem selectedItem)
             {
-                if (selectedItem.Tag is IDriveItemG120 selectedDrive)
+                if (selectedItem.Tag is DeviceItem deviceItem)
                 {
-                    textBlock.Text = _controller.ReadParameter(selectedDrive.DriveObject);
+                    textBlock.Text = _controller.ReadParameter(deviceItem);
                 }
             }
         }

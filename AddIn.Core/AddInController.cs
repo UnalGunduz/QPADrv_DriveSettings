@@ -88,19 +88,19 @@ namespace QPADrv_DriveSettings
                 _controlUnitsS120.Add(new ControlUnitItemS120(controlUnitName));
             }
         }
-        public void AddDriveToControlUnitS120(string controlUnitName, string driveName)
+        public void AddDriveToControlUnitS120(string controlUnitName, string driveName, DeviceItem deviceItem)
         {
             var controlUnit = _controlUnitsS120.FirstOrDefault(cu => cu.Name == controlUnitName);
             if (controlUnit != null && !controlUnit.Drives.Any(d => d.Name == driveName))
             {
-                controlUnit.AddDriveS120(new DriveItemS120(driveName));
+                controlUnit.AddDriveS120(new DriveItemS120(driveName, deviceItem));
             }
         }
-        public void AddDriveG120(string driveName, IEnumerable<DeviceItem> driveObject)
+        public void AddDriveG120(string driveName, DeviceItem deviceItem)
         {
             if (!_driveItemG120.Any(cu => cu.Name == driveName))
             {
-                _driveItemG120.Add(new DriveItemG120(driveName, driveObject));
+                _driveItemG120.Add(new DriveItemG120(driveName, deviceItem));
             }
         }
 
@@ -108,13 +108,14 @@ namespace QPADrv_DriveSettings
         {
             WriteLog($"Seçilen Drive: {drive.Name}");
         }
-        public string ReadParameter(IEnumerable<DeviceItem> driveObject)
+        public string ReadParameter(DeviceItem deviceItem)
         {
 
-            ConnectParameter(actDriveObject, "840[0]", "2090.0");
-            _logText = _logText + nameOfactDeviceItem + ":p840[0] = " + nameOfactDeviceItem + ":" +
-                         ReadParameterValue(driveObject, "840[0]") + Environment.NewLine;
-            return "Button basildi";
+            DriveObject myDriveObject = null;
+
+            myDriveObject = deviceItem.GetService<DriveObjectContainer>().DriveObjects[0];
+
+            return $"Parameter : {deviceItem.Name} => {ReadParameterValue(myDriveObject, "205")}";
         }
 
         public void ProjectAddIn(TiaPortal tiaportal)
@@ -159,7 +160,7 @@ namespace QPADrv_DriveSettings
                             WriteLog($"subDeviceItem.TypeIdentifier: {cuNameS120} => {subDeviceItem.TypeIdentifier}");
                             if (subDeviceItem.TypeIdentifier.Contains("System:Rack"))
                             {
-                                AddDriveToControlUnitS120(cuNameS120, subDeviceItem.Name);
+                                AddDriveToControlUnitS120(cuNameS120, subDeviceItem.Name, subDeviceItem);
 
                                 WriteLog($"📌 Drive Unit: {subDeviceItem.Name} + {subDeviceItem.TypeIdentifier}");
                             }

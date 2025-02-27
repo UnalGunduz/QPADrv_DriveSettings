@@ -12,12 +12,12 @@ namespace QPADrv_DriveSettings
     public class DriveItemG120 : IDriveItemG120
     {
         public string Name { get; }
-        public IEnumerable<DeviceItem> DriveObject { get; }
+        public DeviceItem DeviceItem { get; }
 
-        public DriveItemG120(string name, IEnumerable<DeviceItem> driveObject)
+        public DriveItemG120(string name, DeviceItem deviceItem)
         {
             Name = name;
-            DriveObject = driveObject;
+            DeviceItem = deviceItem;
         }
     }
 }

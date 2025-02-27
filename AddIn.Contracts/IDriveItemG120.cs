@@ -10,6 +10,6 @@ namespace AddIn.Contracts
     public interface IDriveItemG120
     {
         string Name { get; }
-        IEnumerable<DeviceItem> DriveObject { get; }
+        DeviceItem DeviceItem { get; }
     }
 }

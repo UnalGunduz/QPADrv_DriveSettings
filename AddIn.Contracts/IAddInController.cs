@@ -12,9 +12,9 @@ namespace AddIn.Contracts
         List<IControlUnitItemS120> GetControlUnitsS120();
         List<IDriveItemG120> GetDriveItemG120();
         void AddControlUnitS120(string controlUnitName);
-        void AddDriveToControlUnitS120(string controlUnitName, string driveName);
-        void AddDriveG120(string driveName, IEnumerable<DeviceItem> driveObject);
+        void AddDriveToControlUnitS120(string controlUnitName, string driveName, DeviceItem deviceItem);
+        void AddDriveG120(string driveName, DeviceItem deviceItem);
         void HandleSelectedDrive(IDriveItemS120 drive); // UI’den gelen seçimi işleyebilir
-        string ReadParameter(IDriveItemS120 drive); // UI’den gelen seçimi işleyebilir
+        string ReadParameter(DeviceItem drive); // UI’den gelen seçimi işleyebilir
     }
 }
