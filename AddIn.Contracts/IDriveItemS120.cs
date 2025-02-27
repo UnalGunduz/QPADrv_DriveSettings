@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AddIn.Contracts
 {
-    public interface IDriveItem
+    public interface IDriveItemS120
     {
         string Name { get; }
     }

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace AddIn.Contracts
 {
-    public interface IControlUnitItem
+    public interface IControlUnitItemS120
     {
         string Name { get; }
-        List<IDriveItem> Drives { get; }
+        List<IDriveItemS120> Drives { get; }
 
-        void AddDrive(IDriveItem drive);
+        void AddDriveS120(IDriveItemS120 drive);
     }
 }

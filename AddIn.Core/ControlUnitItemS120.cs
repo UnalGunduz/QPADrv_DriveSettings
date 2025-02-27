@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace QPADrv_DriveSettings
 {
-    public class ControlUnitItem : IControlUnitItem
+    public class ControlUnitItemS120 : IControlUnitItemS120
     {
         public string Name { get; }
-        public List<IDriveItem> Drives { get; }
+        public List<IDriveItemS120> Drives { get; }
 
-        public ControlUnitItem(string name)
+        public ControlUnitItemS120(string name)
         {
             Name = name;
-            Drives = new List<IDriveItem>();
+            Drives = new List<IDriveItemS120>();
         }
-        public void AddDrive(IDriveItem drive)
+        public void AddDriveS120(IDriveItemS120 drive)
         {
             if (!Drives.Exists(d => d.Name == drive.Name))
             {

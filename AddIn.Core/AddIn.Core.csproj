@@ -54,8 +54,9 @@
     <Compile Include="AddIn.cs" />
     <Compile Include="AddInController.cs" />
     <Compile Include="AddInProvider.cs" />
-    <Compile Include="ControlUnitItem.cs" />
-    <Compile Include="DriveItem.cs" />
+    <Compile Include="ControlUnitItemS120.cs" />
+    <Compile Include="DriveItemG120.cs" />
+    <Compile Include="DriveItemS120.cs" />
     <Compile Include="LogForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace QPADrv_DriveSettings
 {
-    public class DriveItem : IDriveItem
+    public class DriveItemS120 : IDriveItemS120
     {
         public string Name { get; }
 
-        public DriveItem(string name)
+        public DriveItemS120(string name)
         {
             Name = name;
         }

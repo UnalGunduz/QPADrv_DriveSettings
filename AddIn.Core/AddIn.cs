@@ -15,31 +15,16 @@ namespace QPADrv_DriveSettings
 {
     public class AddIn : ContextMenuAddIn
     {
-        /// <summary>
         ///The global TIA Portal Object 
-        ///<para>It will be used in the TIA Add-In.</para>;
-        /// </summary>
         TiaPortal _tiaportal;
 
         String _logText;
         private readonly AddInController _controller;
 
-        /// <summary>
         /// The display name of the Add-In.
-        /// </summary>
         private const string s_DisplayNameOfAddIn = "QPADrv_DriveSettings";
 
-        /// <summary>
-        /// The constructor of the AddIn.
-        /// Creates an object of the class AddIn
-        /// Called from AddInProvider, when the first
-        /// right-click is performed in TIA
-        /// Motherclass' constructor of ContextMenuAddin
-        /// will be executed, too. 
-        /// <param name="tiaportal">
         /// Represents the actual used TIA Portal process.
-        /// </param>
-        /// </summary>
         public AddIn(TiaPortal tiaportal) : base(s_DisplayNameOfAddIn)
         {
             /*
@@ -53,21 +38,8 @@ namespace QPADrv_DriveSettings
         }
 
 
-        /// <summary>
-        /// The method is supplemented to include the Add-In
-        /// in the Context Menu of TIA Portal.
-        /// Called when a right-click is performed in TIA
-        /// and a mouse-over is performed on the name of the Add-In.
-        /// <typeparam name="addInRootSubmenu">
         /// The Add-In will be displayed in 
         /// the Context Menu of TIA Portal.
-        /// </typeparam>
-        /// <example>
-        /// ActionItems like Buttons/Checkboxes/Radiobuttons
-        /// are possible. In this example, only Buttons will be created 
-        /// which will start the Add-In program code.
-        /// </example>
-        /// </summary>
         protected override void BuildContextMenuItems(ContextMenuAddInRoot
             addInRootSubmenu)
         {
@@ -116,7 +88,9 @@ namespace QPADrv_DriveSettings
             IEnumerable<DeviceItem> selection =
                 menuSelectionProvider.GetSelection<DeviceItem>();
 
-            _controller.GetActDeviceItem(selection);
+            _controller.SelectedDeviceAddIn(selection);
+            //_controller.ProjectAddIn(_tiaportal);
+
 
             MainWindow myWindow = new MainWindow(_controller);
             myWindow.ShowDialog();

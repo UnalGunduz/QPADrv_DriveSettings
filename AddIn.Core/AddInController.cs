@@ -1,14 +1,20 @@
 ﻿using AddIn.Contracts;
 using AddIn.UI;
+using Siemens.Engineering;
 using Siemens.Engineering.HW;
+using Siemens.Engineering.HW.Features;
 using Siemens.Engineering.MC.Drives;
+using Siemens.Engineering.SW;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using static SDRhelper.StartdriveHelper;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace QPADrv_DriveSettings
 {
@@ -17,13 +23,19 @@ namespace QPADrv_DriveSettings
 
         DriveObject myDriveObject;
         public LogForm logForm;
-        private readonly List<IControlUnitItem> _controlUnits;
+        public string cuNameS120;
+        public string cuNameG120;
+        private readonly List<IControlUnitItemS120> _controlUnitsS120;
+        private readonly List<IDriveItemG120> _driveItemG120;
 
         public AddInController()
         {
-            _controlUnits = new List<IControlUnitItem>();
+            _controlUnitsS120 = new List<IControlUnitItemS120>();
+            _driveItemG120 = new List<IDriveItemG120>();
             logForm = new LogForm();
         }
+
+        #region LogForm
         public void ShowLogForm()
         {
             if (logForm.IsDisposed)
@@ -58,155 +70,137 @@ namespace QPADrv_DriveSettings
                 MessageBox.Show($"Log yazılırken bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        #endregion
 
-        public void GetActDeviceItem(IEnumerable<DeviceItem> selection)
+        public List<IControlUnitItemS120> GetControlUnitsS120()
+        {
+            return _controlUnitsS120;
+        }
+        public List<IDriveItemG120> GetDriveItemG120()
+        {
+            return _driveItemG120;
+        }
+
+        public void AddControlUnitS120(string controlUnitName)
+        {
+            if (!_controlUnitsS120.Any(cu => cu.Name == controlUnitName))
+            {
+                _controlUnitsS120.Add(new ControlUnitItemS120(controlUnitName));
+            }
+        }
+        public void AddDriveToControlUnitS120(string controlUnitName, string driveName)
+        {
+            var controlUnit = _controlUnitsS120.FirstOrDefault(cu => cu.Name == controlUnitName);
+            if (controlUnit != null && !controlUnit.Drives.Any(d => d.Name == driveName))
+            {
+                controlUnit.AddDriveS120(new DriveItemS120(driveName));
+            }
+        }
+        public void AddDriveG120(string driveName, IEnumerable<DeviceItem> driveObject)
+        {
+            if (!_driveItemG120.Any(cu => cu.Name == driveName))
+            {
+                _driveItemG120.Add(new DriveItemG120(driveName, driveObject));
+            }
+        }
+
+        public void HandleSelectedDrive(IDriveItemS120 drive)
+        {
+            WriteLog($"Seçilen Drive: {drive.Name}");
+        }
+        public string ReadParameter(IEnumerable<DeviceItem> driveObject)
+        {
+
+            ConnectParameter(actDriveObject, "840[0]", "2090.0");
+            _logText = _logText + nameOfactDeviceItem + ":p840[0] = " + nameOfactDeviceItem + ":" +
+                         ReadParameterValue(driveObject, "840[0]") + Environment.NewLine;
+            return "Button basildi";
+        }
+
+        public void ProjectAddIn(TiaPortal tiaportal)
+        {
+
+            var project = tiaportal.Projects[0]; // İlk projeyi al
+            WriteLog($"TIA Portal Projesi: {project.Name}");
+
+            // TIA Portal içindeki tüm cihazları listele
+            foreach (Device device in project.Devices)
+            {
+                WriteLog($"Device: {device.Name} + {device.TypeIdentifier}");
+            }
+        }
+
+        public void SelectedDeviceAddIn(IEnumerable<DeviceItem> selection)
         {
 
             //change parameters for each selected drive in TIA Portal
-            foreach (DeviceItem actDeviceItem in selection)
+            foreach (DeviceItem selectedDeviceItem in selection)
             {
-                /*
-                 * get the SINAMICS DriveObject 
-                 * S120, S120 Integrated, G120, G115D, G110M
-                 */
+                // Get selected device item to get the device
+                // Check if the selected device is a G120 or S120 drive
                 try
                 {
-                    myDriveObject =
-                    actDeviceItem.GetService<DriveObjectContainer>().DriveObjects[0];
-                }
-                /*
-                 * get the SINAMICS DriveObject 
-                 * S210
-                 */
-                catch
-                {
-                    Device drive_unit =
-                        (Device)actDeviceItem.Parent;
+                    Device device = (Device)selectedDeviceItem.Parent;
 
-                    if (drive_unit.TypeIdentifier.ToString().
-                        Contains("S210"))
+                    WriteLog($"SelectedDeviceItem: {selectedDeviceItem.Name} => {selectedDeviceItem.TypeIdentifier}");
+                    WriteLog($"Device: {device.Name} => {device.TypeIdentifier.ToString()}");
+
+                    // If the device is a S120 drive
+                    if (device.TypeIdentifier == "System:Device.S120")
                     {
-                        foreach (DeviceItem deviceItems
-                            in drive_unit.DeviceItems)
+                        cuNameS120 = selectedDeviceItem.Name;
+                        AddControlUnitS120(cuNameS120);
+
+                        WriteLog($"Control Unit: {cuNameS120} => {selectedDeviceItem.TypeIdentifier}");
+
+                        // Find each drive unit under the control unit
+                        foreach (DeviceItem subDeviceItem in device.DeviceItems)
                         {
-                            if (deviceItems.Classification ==
-                                DeviceItemClassifications.None)
+                            WriteLog($"subDeviceItem.TypeIdentifier: {cuNameS120} => {subDeviceItem.TypeIdentifier}");
+                            if (subDeviceItem.TypeIdentifier.Contains("System:Rack"))
                             {
-                                myDriveObject =
-                                deviceItems.GetService<DriveObjectContainer>().DriveObjects[0];
+                                AddDriveToControlUnitS120(cuNameS120, subDeviceItem.Name);
+
+                                WriteLog($"📌 Drive Unit: {subDeviceItem.Name} + {subDeviceItem.TypeIdentifier}");
                             }
                         }
                     }
-                    //no SINAMICS drive found
-                    else
+
+                    // if the device is a G120 drive
+                    if (device.TypeIdentifier == "System:Device.G120-2")
                     {
-                        myDriveObject = null;
+
+                        AddDriveG120(selectedDeviceItem.Name, selectedDeviceItem);
+                        WriteLog($"Control Unit G120: {selectedDeviceItem.Name} => {selectedDeviceItem.TypeIdentifier}");
+
+                        //// Find each drive unit under the control unit
+                        //foreach (DeviceItem subDeviceItem in device.DeviceItems)
+                        //{
+                        //    if (subDeviceItem.TypeIdentifier == "System:Rack")
+                        //    {
+                        //        AddDriveG120(subDeviceItem.Name);
+
+                        //        WriteLog($"📌 Drive Unit G120: {subDeviceItem.Name} + {subDeviceItem.TypeIdentifier}");
+                        //    }
+                        //}
                     }
 
+
+                }
+
+
+
+
+                catch (Exception ex)
+                {
+                    WriteLog($"DriveObject alınamadı: {ex.Message}");
                 }
                 //Start Code to adjust SINAMICS drive parameters 
-                if (myDriveObject != null)
-                {
-                    ListDrive(myDriveObject);
-                }
+                //if (myDriveObject != null)
+                //{
+                //    ListDrive(myDriveObject);
+                //}
             }
         }
-            //DeviceItem test =
-            //       (DeviceItem)myDriveObject.Parent;
-            //_logText = test.Name.ToString();
-        public void ListDrive(DriveObject actDriveObject)
-        {
-            /*
-             * the Drive Object of the Control Unit of 
-             * the selected drive axis in TIA
-             */
-            DriveObject myControlUnit = null;
-
-            /*
-             * the Drive Object of any other axis in 
-             * the same device
-             */
-            //DriveObject DriveAxis1 = null;
-
-            /*
-             * the Drive Object of the Infeed of 
-             * the selected drive axis in TIA
-             */
-            //DriveObject myInfeed = null;
-            //get the device unit
-            DeviceItem actDeviceItem =
-                   (DeviceItem)actDriveObject.Parent.Parent;
-
-            String nameOfactDeviceItem = actDeviceItem.Name.ToString();
-            String nameOfCU = null;
-
-            //In case of S120 devices
-            if (actDeviceItem.TypeIdentifier == "System:Rack")
-            {
-                //get Control Unit Drive Object
-                myControlUnit = GetControlUnit(actDriveObject);
-                nameOfCU = actDriveObject.ToString();
-
-                AddControlUnit(nameOfCU);
-                AddDriveToControlUnit(nameOfCU, nameOfactDeviceItem);
-
-                //get Infeed Drive Object
-                //myInfeed = GetInfeedAxis(actDriveObject);
-
-                /*
-                 * to access any other DriveAxis, replace the string
-                 * by the name of the other drive axis 
-                 */
-                //DriveAxis1 = GetDriveAxisByName(actDriveObject,
-                //    "Other_Drive_axis_name");
-            }
-            //controller.AddControlUnit("Test Control Unit");
-            //_controller.AddControlUnit("Test Control Unit_1");
-            //_controller.AddDriveToControlUnit("Test Control Unit_1", "Test Drive_1");
-            //_controller.AddDriveToControlUnit("Test Control Unit_1", "Test Drive_2");
-            ////controller.AddDrive("Test Drive_2");
-
-        }
-        public void ButtonTest_1()
-        {
-            DriveObject myControlUnit = null;
-            DeviceItem actDeviceItem =
-                   (DeviceItem)myDriveObject.Parent.Parent;
-            String nameOfactDeviceItem = actDeviceItem.Name.ToString();
-            String nameOfCU = null;
-
-            WriteLog("Button basildi");
-        }
-
-
-        public List<IControlUnitItem> GetControlUnits()
-        {
-            return _controlUnits;
-        }
-
-        public void AddControlUnit(string controlUnitName)
-        {
-            if (!_controlUnits.Any(cu => cu.Name == controlUnitName))
-            {
-                _controlUnits.Add(new ControlUnitItem(controlUnitName));
-            }
-        }
-        public void AddDriveToControlUnit(string controlUnitName, string driveName)
-        {
-            var controlUnit = _controlUnits.FirstOrDefault(cu => cu.Name == controlUnitName);
-            if (controlUnit != null && !controlUnit.Drives.Any(d => d.Name == driveName))
-            {
-                controlUnit.AddDrive(new DriveItem(driveName));
-            }
-        }
-        public void HandleSelectedDrive(IDriveItem drive)
-        {
-            //WriteLog($"Seçilen Drive: {drive.Name}");
-        }
-        public void WriteLogText()
-        {
-            ButtonTest_1();
-        }
-
     }
 }

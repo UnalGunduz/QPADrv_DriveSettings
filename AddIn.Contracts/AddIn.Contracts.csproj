@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Siemens.Engineering.AddIn">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Siemens\Automation\Portal V19\PublicAPI\V19.AddIn\Siemens.Engineering.AddIn.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,8 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IAddInController.cs" />
-    <Compile Include="IControlUnitItem.cs" />
-    <Compile Include="IDriveItem.cs" />
+    <Compile Include="IControlUnitItemS120.cs" />
+    <Compile Include="IDriveItemG120.cs" />
+    <Compile Include="IDriveItemS120.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

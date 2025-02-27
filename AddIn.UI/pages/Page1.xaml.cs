@@ -42,29 +42,41 @@ namespace AddIn.UI.pages
         {
             DriveTreeView.Items.Clear();
 
-            List<IControlUnitItem> controlUnits = _controller.GetControlUnits();
+            List<IControlUnitItemS120> controlUnitsS120 = _controller.GetControlUnitsS120();
+            List<IDriveItemG120> drivesG120 = _controller.GetDriveItemG120();
 
-            if (controlUnits != null)
+            if (drivesG120 != null)
             {
-                foreach (var controlUnit in controlUnits)
+                foreach (var driveG120 in drivesG120)
                 {
-                    TreeViewItem controlUnitNode = new TreeViewItem
+                    TreeViewItem driveNodeG120 = new TreeViewItem
                     {
-                        Header = controlUnit.Name
+                        Header = driveG120.Name
+                    };
+                    DriveTreeView.Items.Add(driveNodeG120);
+                }
+            }
+            if (controlUnitsS120 != null)
+            {
+                foreach (var controlUnitS120 in controlUnitsS120)
+                {
+                    TreeViewItem controlUnitNodeS120 = new TreeViewItem
+                    {
+                        Header = controlUnitS120.Name
                     };
 
-                    foreach (var drive in controlUnit.Drives)
+                    foreach (var driveS120 in controlUnitS120.Drives)
                     {
 
-                        TreeViewItem driveNode = new TreeViewItem
+                        TreeViewItem driveNodeS120 = new TreeViewItem
                         {
-                            Header = drive.Name
+                            Header = driveS120.Name
                         };
-                        controlUnitNode.Items.Add(driveNode);
+                        controlUnitNodeS120.Items.Add(driveNodeS120);
 
 
                     }
-                    DriveTreeView.Items.Add(controlUnitNode);
+                    DriveTreeView.Items.Add(controlUnitNodeS120);
                 }
             }
         }
@@ -72,7 +84,7 @@ namespace AddIn.UI.pages
         {
             if (DriveTreeView.SelectedItem is TreeViewItem selectedItem)
             {
-                if (selectedItem.Tag is IDriveItem selectedDrive)
+                if (selectedItem.Tag is IDriveItemS120 selectedDrive)
                 {
                     _controller.HandleSelectedDrive(selectedDrive);
                 }
@@ -92,7 +104,13 @@ namespace AddIn.UI.pages
         }
         private void Button_Test1(object sender, RoutedEventArgs e)
         {
-            _controller.WriteLogText();
+            if (DriveTreeView.SelectedItem is TreeViewItem selectedItem)
+            {
+                if (selectedItem.Tag is IDriveItemG120 selectedDrive)
+                {
+                    textBlock.Text = _controller.ReadParameter(selectedDrive.DriveObject);
+                }
+            }
         }
 
         /// <summary>
